@@ -1,0 +1,43 @@
+/* 1. 引入 Tailwind (如果模板已有這三行，請保留) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 2. 引入像素字體 */
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+/* 3. 全局樣式設定 */
+body {
+  font-family: "Press Start 2P", cursive; /* 強制使用像素字體 */
+  background-color: #f3f4f6; /* 灰色背景 */
+}
+
+/* 4. 自定義像素按鈕效果 */
+.pixel-btn {
+  box-shadow: 4px 4px 0px 0px #000000; /* 實心陰影 */
+  transition: all 0.1s;
+}
+
+.pixel-btn:active {
+  transform: translate(2px, 2px); /* 按下時位移 */
+  box-shadow: 2px 2px 0px 0px #000000;
+}
+
+/* 抽卡時的彈出動畫 */
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
