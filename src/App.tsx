@@ -34,6 +34,7 @@ import {
 import TaskModal from "./TaskModel";
 import GachaView from "./GachaView";
 import CollectionView from "./CollectionView";
+import CategoryManagerModal from "./CategoryManagerModal";
 
 // --- 3. Main Component ---
 
@@ -84,6 +85,22 @@ export default function App() {
     Record<string, boolean>
   >({});
 
+  // --- 每個類別任務檢查
+  // src/App.tsx (新增在 state 定義之後)
+
+  // ... (省略 state 定義)
+
+  // 💡 計算每個類別有多少任務，用於 Category Manager 的刪除檢查
+  const tasksCount = useMemo(() => {
+    return tasks.reduce((acc, task) => {
+      acc[task.categoryId] = (acc[task.categoryId] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+  }, [tasks]);
+
+  // --- Effects: Persistence & Daily Reset ---
+
+  // ... (省略 useEffect 內容)
   // --- Effects: Persistence & Daily Reset ---
 
   useEffect(() => {
@@ -395,12 +412,14 @@ export default function App() {
       {view === "collection" && (
         <CollectionView inventory={inventory} setView={setView} />
       )}
-      {/* R2: VIEW: CATEGORY MANAGER (Omitted for brevity) */}
+      {/* R2: VIEW: CATEGORY MANAGER (使用模組化組件) */}     {" "}
       {view === "category_manager" && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          {/* ... Category Manager Modal content ... */}
-          {/* 這裡需要 Category Manager 的實際內容，目前是空的 */}
-        </div>
+        <CategoryManagerModal
+          categories={categories}
+          setCategories={setCategories}
+          onClose={() => setView("dashboard")} // 點擊 X 關閉後，將視圖切回 dashboard
+          tasksCount={tasksCount} // 傳遞任務數量給刪除檢查使用
+        />
       )}
       {/* MODAL: ADD TASK (使用模組化組件) */}
       <TaskModal
