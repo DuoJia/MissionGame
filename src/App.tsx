@@ -238,8 +238,10 @@ export default function App() {
       setLastDraw(newCard);
       setGachaAnimating(false);
     }, 1500);
-  };
-
+  }; //結束 drawCard 函式！
+  // ---------------------------------------------------------
+  // 👇 【關鍵步驟 2】 這裡才是 App 主程式的 return，必須在 drawCard 外面
+  // ---------------------------------------------------------
   // --- Render ---
   return (
     <div className="min-h-screen pb-20 md:pb-8 max-w-lg mx-auto bg-gray-50 border-x-4 border-gray-300 min-h-screen shadow-2xl">
