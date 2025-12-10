@@ -1,5 +1,5 @@
 // src/types.ts
-
+//新增生命攻擊、抽卡合成功能
 export type Rarity = "common" | "rare" | "epic" | "legendary";
 export type View = "dashboard" | "collection" | "category_manager" | "gacha";
 
