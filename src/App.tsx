@@ -35,7 +35,10 @@ import TaskModal from "./TaskModel";
 import GachaView from "./GachaView";
 import CollectionView from "./CollectionView";
 import CategoryManagerModal from "./CategoryManagerModal";
-
+import {
+  // ... 其他引入
+  generateCardStats, // <--- 新增這個
+} from "./types";
 // --- 3. Main Component ---
 
 export default function App() {
@@ -196,8 +199,9 @@ export default function App() {
   };
 
   // 🎯 抽卡成本設定為 100 點
+  // 🎯 修改 drawCard 邏輯
   const drawCard = () => {
-    const COST = 100; // 成本改為 100 PT
+    const COST = 100;
     if (user.total_points < COST) {
       alert(`積分不足 (需要 ${COST} PT)`);
       return;
@@ -217,11 +221,17 @@ export default function App() {
         CARD_TEMPLATES.filter((c) => c.rarity === rarity) || CARD_TEMPLATES;
       const template = pool[Math.floor(Math.random() * pool.length)];
 
+      // 生成數值
+      const stats = generateCardStats(rarity as Rarity);
+
       const newCard: Card = {
         id: Date.now().toString(),
         name: template.name,
-        rarity: rarity,
+        rarity: rarity as Rarity,
         seed: Math.random().toString(),
+        hp: stats.hp, // <--- 設定 HP
+        atk: stats.atk, // <--- 設定 ATK
+        starLevel: 1, // <--- 初始 1 星
       };
 
       setInventory((prev) => [newCard, ...prev]);
@@ -231,7 +241,6 @@ export default function App() {
   };
 
   // --- Render ---
-
   return (
     <div className="min-h-screen pb-20 md:pb-8 max-w-lg mx-auto bg-gray-50 border-x-4 border-gray-300 min-h-screen shadow-2xl">
       {/* Header */}
@@ -309,7 +318,7 @@ export default function App() {
           >
             <Plus size={20} /> NEW TASK
           </button>
-          {/* Task Lists by Category (R3: Folding Logic applied) */}
+          {/* Task Lists by Category */}
           {categories.map((cat) => {
             const catTasks = tasks.filter((t) => t.categoryId === cat.id);
             if (catTasks.length === 0 && view === "dashboard") return null;
@@ -347,13 +356,13 @@ export default function App() {
                       <div
                         key={task.id}
                         className={`
-                          group relative p-3 bg-white border-4 border-black transition-all
-                          ${
-                            task.completed
-                              ? "opacity-60 bg-gray-100"
-                              : "hover:-translate-y-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]"
-                          }
-                        `}
+                        group relative p-3 bg-white border-4 border-black transition-all
+                        ${
+                          task.completed
+                            ? "opacity-60 bg-gray-100"
+                            : "hover:-translate-y-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]"
+                        }
+                      `}
                       >
                         <div className="flex justify-between items-center">
                           <div className="flex-1">
@@ -399,7 +408,8 @@ export default function App() {
           })}
         </div>
       )}
-      {/* VIEW: GACHA (使用模組化組件) */}
+
+      {/* VIEW: GACHA */}
       {view === "gacha" && (
         <GachaView
           user={user}
@@ -408,20 +418,28 @@ export default function App() {
           drawCard={drawCard}
         />
       )}
-      {/* VIEW: COLLECTION (使用模組化組件) */}
+
+      {/* 🎯 修改點在這裡：VIEW: COLLECTION */}
+      {/* 必須傳遞 setInventory 給 CollectionView，合成功能才能運作 */}
       {view === "collection" && (
-        <CollectionView inventory={inventory} setView={setView} />
+        <CollectionView
+          inventory={inventory}
+          setView={setView}
+          setInventory={setInventory}
+        />
       )}
-      {/* R2: VIEW: CATEGORY MANAGER (使用模組化組件) */}     {" "}
+
+      {/* VIEW: CATEGORY MANAGER */}
       {view === "category_manager" && (
         <CategoryManagerModal
           categories={categories}
           setCategories={setCategories}
-          onClose={() => setView("dashboard")} // 點擊 X 關閉後，將視圖切回 dashboard
-          tasksCount={tasksCount} // 傳遞任務數量給刪除檢查使用
+          onClose={() => setView("dashboard")}
+          tasksCount={tasksCount}
         />
       )}
-      {/* MODAL: ADD TASK (使用模組化組件) */}
+
+      {/* MODAL: ADD TASK */}
       <TaskModal
         isTaskModalOpen={isTaskModalOpen}
         setIsTaskModalOpen={setIsTaskModalOpen}
@@ -432,4 +450,4 @@ export default function App() {
       />
     </div>
   );
-}
+} // 👈 這是 App 的最後一個結束括號
