@@ -1,6 +1,5 @@
 // src/types.ts
-// 定義類別
-
+//新增生命攻擊、抽卡合成功能
 export type Rarity = "common" | "rare" | "epic" | "legendary";
 export type View = "dashboard" | "collection" | "category_manager" | "gacha";
 
@@ -28,11 +27,15 @@ export interface Task {
   period: "daily" | "once";
 }
 
+// 🎯 更新 Card 介面，新增數值與星級
 export interface Card {
   id: string;
   name: string;
   rarity: Rarity;
   seed: string;
+  hp: number; // 新增：生命力
+  atk: number; // 新增：攻擊力
+  starLevel: number; // 新增：星級 (1-5)
 }
 
 export const INITIAL_CATEGORIES: Category[] = [
@@ -76,4 +79,37 @@ export const getRarityColor = (r: string) => {
     default:
       return "border-gray-400";
   }
+};
+
+// 🎯 新增：根據稀有度生成數值 (最小1 最大20)
+export const generateCardStats = (rarity: Rarity) => {
+  const randomInt = (min: number, max: number) =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
+
+  // 依據稀有度設定區間，總體落在 1-20
+  let min = 1,
+    max = 5;
+  switch (rarity) {
+    case "common":
+      min = 1;
+      max = 8;
+      break;
+    case "rare":
+      min = 5;
+      max = 12;
+      break;
+    case "epic":
+      min = 10;
+      max = 16;
+      break;
+    case "legendary":
+      min = 15;
+      max = 20;
+      break;
+  }
+
+  return {
+    hp: randomInt(min, max),
+    atk: randomInt(min, max),
+  };
 };
